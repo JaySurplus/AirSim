@@ -122,7 +122,10 @@ public:
 		{
 			remoteaddr.sin_port = 0;
 		}
-
+		struct timeval tv;
+		tv.tv_sec = 1.0;
+                tv.tv_usec = 0;
+                setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
 		// bind socket to local address.
 		socklen_t addrlen = sizeof(sockaddr_in);
 		int rc = bind(sock, reinterpret_cast<sockaddr*>(&localaddr), addrlen);
@@ -181,14 +184,15 @@ public:
 		#else
 		int hr = sendto(sock, reinterpret_cast<const char*>(ptr), count, 0, reinterpret_cast<sockaddr*>(&remoteaddr), addrlen);
 		#endif
-		if (hr == SOCKET_ERROR)
-		{
-			hr = checkerror();
+		
+		///if (hr == SOCKET_ERROR)
+		///{
+		//	hr = checkerror();
 			// perhaps the client is gone, and may want to come back on a different port, in which case let's reset our remote port to allow that.
-			remoteaddr.sin_port = 0;
-			throw std::runtime_error(Utils::stringf("UdpClientPort socket send failed with error: %d\n", hr));
-		}
-
+		///	remoteaddr.sin_port = 0;
+		///	throw std::runtime_error(Utils::stringf("UdpClientPort socket send failed with error: %d\n", hr));
+		///}
+		///
 		return hr;
 	}
 
